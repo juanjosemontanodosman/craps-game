@@ -15,7 +15,9 @@ import javafx.scene.input.MouseEvent;
 public class GameController {
 
     private Player currentPlayer;
-    private Game game;
+    private final Game game = new Game();
+    private final Dice dice1 = new Dice();
+    private final Dice dice2 = new Dice();
 
     @FXML
     private ImageView dice1ImageView;
@@ -33,10 +35,17 @@ public class GameController {
     private Label pointLabel;
 
     @FXML
-    private TextArea messageTextArea;
+    private Label wonGamesLabel;
 
-    public GameController() {
-        this.game = new Game();
+    @FXML
+    private Label lostGamesLabel;
+
+    @FXML
+    private TextArea resultTextArea;
+
+    @FXML
+    public void initialize() {
+        updateGameLabels();
     }
 
     public Player getCurrentPlayer() {
@@ -45,54 +54,41 @@ public class GameController {
 
     public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
-        if (nicknameLabel != null) {
-            nicknameLabel.setText(this.currentPlayer.getNickname());
-        }
-    }
-
-    @FXML
-    public void initialize() {
-        if (this.game == null) {
-            this.game = new Game();
-        }
-        updateView();
-    }
-
-    private void updateView() {
-        if (shotLabel != null) {
-            shotLabel.setText(String.valueOf(game.getShot()));
-        }
-        if (pointLabel != null) {
-            if (game.isPointSet()) {
-                pointLabel.setText(String.valueOf(game.getPoint()));
-            } else {
-                pointLabel.setText("00");
-            }
-        }
+        nicknameLabel.setText(this.currentPlayer.getNickname());
     }
 
     @FXML
     void onMouseClickedDropButton(MouseEvent event) {
-        Dice dice1 = new Dice();
-        int value1 = dice1.roll();
-        if (dice1ImageView != null) {
-            dice1ImageView.setImage(new Image(getClass().getResourceAsStream(dice1.getImagePath())));
-        }
+        int dice1Value = dice1.roll();
+        int dice2Value = dice2.roll();
 
-        Dice dice2 = new Dice();
-        int value2 = dice2.roll();
-        if (dice2ImageView != null) {
-            dice2ImageView.setImage(new Image(getClass().getResourceAsStream(dice2.getImagePath())));
-        }
+        dice1ImageView.setImage(
+                new Image(
+                        getClass().getResourceAsStream(
+                                dice1.getImagePath()
+                        )
+                )
+        );
 
-        int total = value1 + value2;
-        if (this.game == null) {
-            this.game = new Game();
-        }
-        game.setDice1Value(value1);
-        game.setDice2Value(value2);
-        game.setShot(total);
-        updateView();
+        dice2ImageView.setImage(
+                new Image(
+                        getClass().getResourceAsStream(
+                                dice2.getImagePath()
+                        )
+                )
+        );
+
+        String result = game.play(dice1Value, dice2Value);
+
+        updateGameLabels();
+        resultTextArea.appendText(result + System.lineSeparator());
+    }
+
+    private void updateGameLabels() {
+        shotLabel.setText(String.format("%02d", game.getShot()));
+        pointLabel.setText(String.format("%02d", game.getPoint()));
+        wonGamesLabel.setText(String.valueOf(game.getWonGames()));
+        lostGamesLabel.setText(String.valueOf(game.getLostGames()));
     }
 
     @FXML
