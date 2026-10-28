@@ -5,6 +5,7 @@ import com.example.crapsgame262.models.Game;
 import com.example.crapsgame262.models.Player;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -28,6 +29,9 @@ public class GameController {
 
     @FXML
     private Label pointLabel;
+
+    @FXML
+    private TextArea messageTextArea;
 
     public GameController() {
         this.game = new Game();
